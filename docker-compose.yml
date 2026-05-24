@@ -1,0 +1,40 @@
+# Default stack (CPU API — works without NVIDIA Container Toolkit).
+# For GPU: ./scripts/docker-up-gpu.sh   or   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up --build
+
+services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.cpu
+    ports:
+      - "8100:8100"
+    environment:
+      DATA_DIR: /app/data
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+      PUBLIC_API_URL: http://localhost:8100
+      DEVICE: cpu
+      MODEL_ID: Kim2091/UltraSharpV2
+      DEFAULT_UPSCALE_MODE: ultrasharp
+      MAX_SR_LONG_EDGE: "4096"
+      HF_HOME: /cache/huggingface
+    volumes:
+      - ./data:/app/data
+      - ./.cache/huggingface:/cache/huggingface
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8100/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      API_URL: http://api:8100
+    depends_on:
+      api:
+        condition: service_healthy

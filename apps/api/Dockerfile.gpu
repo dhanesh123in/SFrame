@@ -1,0 +1,18 @@
+FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
+
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+WORKDIR /app
+
+# No apt-get: PyTorch image already ships runtime libs Pillow needs.
+# Avoids apt GPG failures in some Docker/build environments.
+
+COPY pyproject.toml ./
+COPY app ./app
+
+RUN pip install --no-cache-dir .
+
+EXPOSE 8100
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8100"]

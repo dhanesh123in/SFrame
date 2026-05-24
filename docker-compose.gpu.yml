@@ -1,0 +1,25 @@
+# GPU overlay — requires NVIDIA Container Toolkit (scripts/setup-nvidia-docker.sh).
+# Uses `runtime: nvidia` (not bare `gpus: all`, which fails with driver "" if toolkit is missing).
+
+services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.gpu
+    runtime: nvidia
+    environment:
+      DEVICE: cuda
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import torch; assert torch.cuda.is_available(), 'CUDA not visible in container'",
+        ]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
