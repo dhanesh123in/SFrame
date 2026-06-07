@@ -18,7 +18,7 @@ I wanted something simpler: **drop an image in the browser, crop if needed, run 
 
 That’s **SFrame** — a small app with a Next.js front end and a FastAPI + PyTorch back end. The headline feature is **local 4× upscaling**. Everything else (crop, color, history) exists to get a clean input into the model.
 
-![SFrame import screen — drop a DSLR image or browse for JPEG, PNG, TIFF, or Canon RAW](screenshots/01-import.png)
+<img src="screenshots/01-import.png" alt="SFrame import screen — drop a DSLR image or browse for JPEG, PNG, TIFF, or Canon RAW" width="82%" />
 *Import supports JPEG, PNG, TIFF, and Canon RAW up to 250 MB.*
 
 ---
@@ -108,9 +108,6 @@ Models download once to `./.cache/huggingface/`. Assets and job history live und
 | AuraSR | aura-sr |
 | Jobs / history | SQLite + on-disk assets |
 
-![API health check — CUDA available on local GPU](screenshots/06-health-gpu.png)
-*`GET /health` confirms PyTorch sees your GPU before you run a long upscale job.*
-
 **GPU path:**
 
 ```bash
@@ -178,6 +175,4 @@ If you’re tired of export → upload → wait → download, running 4× tiled 
 | `03-enhance-ultrasharp.png` | Main SR feature — modes, tiling, 4× dimensions |
 | `04-export-before-after.png` | Export / quality judgment section |
 | `05-history.png` | Local-first / session management (optional RAW chain) |
-| `06-health-gpu.png` | GPU / self-hosted setup sidebar |
-
 **Medium tip:** upload images at full width; add alt text from the captions above. Lead with `03-enhance-ultrasharp.png` if Medium only shows one image in the feed.

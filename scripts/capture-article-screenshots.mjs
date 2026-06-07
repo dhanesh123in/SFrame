@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Capture Medium article screenshots. Requires dev servers on :3000 and :8100.
+ * Capture Medium article screenshots. Requires dev server on :3000.
  * Usage: node scripts/capture-article-screenshots.mjs
  */
 import { chromium } from "playwright";
@@ -25,7 +25,7 @@ async function main() {
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
-    viewport: { width: 1440, height: 900 },
+    viewport: { width: 1440, height: 1280 },
     deviceScaleFactor: 2,
     colorScheme: "dark",
   });
@@ -45,7 +45,7 @@ async function main() {
   await page.getByRole("tab", { name: "Enhance" }).click();
   await page.getByText("Super-Resolution").waitFor();
   await page.waitForTimeout(500);
-  await shot(page, "03-enhance-ultrasharp.png");
+  await shot(page, "03-enhance-ultrasharp.png", { fullPage: true });
 
   // 4 — UltraSharp export + before/after slider (smaller file for reasonable capture time)
   const small = path.join(ROOT, "docs/medium-article/sample-small.jpg");
@@ -59,18 +59,13 @@ async function main() {
   await page.getByRole("link", { name: /Download upscaled/i }).waitFor({ timeout: 300_000 });
   await page.getByRole("tab", { name: "Export" }).click();
   await page.waitForTimeout(800);
-  await shot(page, "04-export-before-after.png");
+  await shot(page, "04-export-before-after.png", { fullPage: true });
 
   // 5 — History
   await page.getByRole("tab", { name: "History" }).click();
   await page.getByRole("heading", { name: "History" }).waitFor({ timeout: 15_000 });
   await page.waitForTimeout(800);
   await shot(page, "05-history.png");
-
-  // 6 — API health (GPU)
-  const health = await context.newPage();
-  await health.goto("http://127.0.0.1:8100/health", { waitUntil: "networkidle" });
-  await shot(health, "06-health-gpu.png");
 
   await browser.close();
   console.log("\nDone. Screenshots in docs/medium-article/screenshots/");
